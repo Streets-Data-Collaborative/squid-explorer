@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript" src="js/ss_config.js"></script>
+	<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+	ga('create', config.trackingID, 'auto');
+	ga('send', 'pageview');
+	</script>
+
+	<title>SQUID Explorer</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="css/styles.css">
+
+</head>
+<body>
+	<!-- Navigation -->
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header col-md-4">
+				<a class="navbar-brand" href="">
+					S Q U I D
+				</a>
+			</div>
+			<ul class="nav navbar-nav col-md-6">
+				<!-- I use href="javascript:..." because href default cursor property is pointer -->
+				<!-- <li><a id='aboutLink' href="javascript: smoothScroll('#about');">About</a></li> -->
+				<!-- <li><a id='toolLink' href="javascript: smoothScroll('#tool');">Tool</a></li> -->
+			</ul>
+			<div class="navbar-header col-md-2">
+				<a id='argoBrand' class="navbar-brand" href="http://argolabs.org">
+					Powered by ARGO
+				</a>
+			</div>
+		</div>
+	</nav>
+
+	<!-- Content -->
+	<div class="container-fluid">
+		<div id='tool' class='section row'>
+			<div id='detail' class="col-md-4">
+				<div id='imgContainer'>
+					<div id='initalPrompt'>
+						<span id='marker' class="glyphicon glyphicon-map-marker"></span>
+					</div>
+					<div id='loaderContainer' style='display: none;'>
+						<div id="loader"></div>
+					</div>
+					
+					<img id= 'streetImg'>
+					<p id='attributes'>
+						<b class='biggerText'>Image Timestamp: </b> <span id="imageDate"></span><br>
+						<b class='biggerText'>Quality Rank (0-100): </b> <span id="rideQuality"></span>
+					</p>
+				</div>
+				
+				
+			</div>
+			<div class="col-md-8 nopadding">
+				<div id="map"></div>
+			</div>
+		</div>
+	</div>
+
+
+	<script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script src="https://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="js/objects.js"></script>
+	<script type="text/javascript" src="js/script.js"></script>
+	<script>
+	window.onload = function() {
+		dataSetup(main);
+	};
+	</script>
+</body>
+</html>

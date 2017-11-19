@@ -1,0 +1,131 @@
+body {
+	background-color: #222;
+	/*scroll lock*/
+	/*overflow: hidden; */
+	/*font-size: 130%;*/
+}
+
+nav {
+	z-index: 100000000000 !important;
+}
+
+
+#loaderContainer{
+	padding-top: calc(50% + 30px + 44px);
+}
+
+#loader {
+	margin: auto;
+	/*width: 100px; */
+	/*position: absolute;*/
+	border: 16px solid #222; 
+	border-top: 16px solid #D9C24F; 
+	border-left: 16px solid #D9534F;
+	border-right: 16px solid #3EAB45;
+	border-radius: 50%;
+	width: 120px;
+	height: 120px;
+	animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
+
+
+.navbar-inverse .navbar-brand {
+	color: white;
+	padding-left: 0px !important;
+}
+
+.section {
+	background-color: white;
+}
+
+.biggerText{
+	font-size: 20px;
+}
+
+#attributes {
+	display: none;
+	position: absolute;
+	background-color:  rgba(34, 34, 34, .7);
+	color: white;
+	width: calc(100% - 30px);
+	overflow: hidden;
+	padding: 15px;
+	bottom: 5px;
+}
+
+#streetImg{
+	max-width: 100%;
+	max-height: 100%;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#initalPrompt{
+	text-align: center;
+	vertical-align: middle;
+	
+}
+
+#marker{
+	/*line-height: calc(100vh - 80px);*/
+	font-size: 180px;
+	animation: prompt 5s infinite;
+	/*animation: morph 5s infinite;*/
+}
+
+@keyframes prompt {
+    0%  {color: #222; top: 0px;}
+    10%  {color: #222; top: 0px;}
+    20% {color: #222; top: -50px;}
+    30% {color: #D9534F; top: 0px;}
+    40% {color: #D9534F; top: -50px;}
+    50% {color: #D9C24F;top: 0px;}
+    60% {color: #D9C24F; top: -50px;}
+    70% {color: #3EAB45;top: 0px;}
+    80% {color: #3EAB45;top: -50px;}
+    90% {color: #222; top: 0px;}
+    100% {color: #222; top: 0px;}
+}
+
+
+
+#imgContainer{
+	margin-top: 15px;
+	margin-bottom: 15px;
+	width: 100%;
+	height:calc(100% - 30px);
+	background-color: #A2A2A2;
+}
+
+#argoBrand{
+	font-weight: lighter;
+	width: 200px;
+	color: #66afe9;
+	float: right;
+	text-align: right;
+	padding-right: 0px !important;
+}
+
+.nopadding {
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+.noleftpadding {
+	padding-left: 0 !important;
+	margin: 0 !important;
+}
+
+.halfleftpadding {
+	padding-left: 7.5px !important;
+}
+
+.halfrightpadding {
+	padding-right: 7.5px !important;
+}
