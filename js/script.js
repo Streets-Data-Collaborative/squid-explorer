@@ -122,9 +122,9 @@ function mapSetup() {
 
 	var query = `
 		SELECT *,
-		TRUNC(100*((${config.column_names.relative_ride_quality} - ${globals.max}) / (${globals.min} - ${globals.max}))) ride_quality_score
+		TRUNC(100*((${config.column_names.ride_quality} - ${globals.max}) / (${globals.min} - ${globals.max}))) ride_quality_score
 	 	FROM ${config.geometry_table}
-	 	ORDER BY ${config.column_names.relative_ride_quality}
+	 	ORDER BY ${config.column_names.ride_quality}
 	 	`
 
 	var placeLayer = {

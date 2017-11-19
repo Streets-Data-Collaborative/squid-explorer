@@ -9,7 +9,9 @@ var config = {
 
 	"attribute_table" : "<MUNI_DATA>",
 	"column_names" : {
-		"date" :
+		"date" : '<TIMESTAMP>',
+		"ride_quality" : '<RIDE_QUALITY>',
+		"img_location" : "<LINK_TO_IMAGE>"
 	}
 }
 
@@ -27,7 +29,7 @@ config.geom_type = "point"
 //attribute related configuration
 config.attribute_table = "squid_bike"
 config.column_names.date = 'timestamp'
-config.column_names.relative_ride_quality = 'v_value'
-// config.column_names.relative_ride_quality = 'ride_quality'
+config.column_names.ride_quality = 'v_value'
+// config.column_names.ride_quality = 'ride_quality'
 config.column_names.img_location = 'image_url'
 // config.column_names.img_location = 'link_to_s3_image'
