@@ -18,7 +18,7 @@ nav {
 	margin: auto;
 	/*width: 100px; */
 	/*position: absolute;*/
-	border: 16px solid #222; 
+	border: 16px solid #A2A2A2; 
 	border-top: 16px solid #D9C24F; 
 	border-left: 16px solid #D9534F;
 	border-right: 16px solid #3EAB45;
@@ -75,7 +75,9 @@ nav {
 #marker{
 	/*line-height: calc(100vh - 80px);*/
 	font-size: 180px;
+	color: #222;
 	animation: prompt 5s infinite;
+	animation-delay: 3s;
 	/*animation: morph 5s infinite;*/
 }
 

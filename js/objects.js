@@ -24,10 +24,11 @@ function dataSetup(callback) {
 		randLocation = idxData.rows[randIdx]['cartodb_id'];
 		state.featureID = randLocation
 
+
 		query = `
 		SELECT
-			max(${config.column_names.relative_ride_quality}) mx,
-			min(${config.column_names.relative_ride_quality}) mn
+			max(${config.column_names.ride_quality}) mx,
+			min(${config.column_names.ride_quality}) mn
 		FROM ${config.attribute_table}`,
 		encoded_query = encodeURIComponent(query),
 	url = `https://${config.account}.carto.com/api/v2/sql?q=${encoded_query}`;
@@ -81,7 +82,7 @@ var cartography = {
 choropleth = new cdb.geo.ui.Legend({
 	type: "choropleth",
 	show_title: true,
-	title: "Ride Quality Rank",
+	title: "Ride Quality Score",
 	data: [{
 		value: "0 -------- 20 -------- 40 ------- 60 ------- 80 ----- 100"
 	}, {
