@@ -122,6 +122,7 @@ function mapSetup() {
 
 	var query = `
 		SELECT *,
+		to_char(${config.column_names.date}, 'Mon YY (HH24:MI:SS)') clean_date,
 		TRUNC(100*((${config.column_names.ride_quality} - ${globals.max}) / (${globals.min} - ${globals.max}))) ride_quality_score
 	 	FROM ${config.geometry_table}
 	 	ORDER BY ${config.column_names.ride_quality}
@@ -135,7 +136,9 @@ function mapSetup() {
 			cartocss: cartography.cartocss,
 			interactivity: [
 			config.column_names.date,
+			'clean_date',
 			'ride_quality_score',
+			config.column_names.ride_quality,
 			config.column_names.img_location,
 			'cartodb_id'
 			]
@@ -163,8 +166,9 @@ function mapSetup() {
     	globals.sublayers[0].on('featureClick', function(e, latlng, pos, data) {
     		$('#initalPrompt').fadeOut();
     		showFeature(data.cartodb_id)
-    		transition('#imageDate', data[config.column_names.date])
+    		transition('#imageDate', data['clean_date'])
     		transition('#rideQuality', data.ride_quality_score)
+    		// transition('#rideQuality', config.column_names.ride_quality)
     		
     		$('#streetImg').fadeOut(function() {
     			$('#loaderContainer').fadeIn();
