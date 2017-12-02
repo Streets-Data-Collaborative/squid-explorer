@@ -89,6 +89,73 @@ function transition(element, content){
 	});
 }
 
+function imageTransition(imgUrl, clean_date, ride_quality) {
+	transition('#imageDate', clean_date)
+	transition('#rideQuality', ride_quality)
+	$('#rightNext, #leftNext').fadeOut();
+	$('#streetImg').fadeOut(function() {
+		$('#loaderContainer').fadeIn();
+		$('#streetImg')
+		.attr('src', imgUrl)
+		.load(function() {
+			$('#loaderContainer').fadeOut(function() {
+				$('#streetImg, #rightNext, #leftNext').fadeIn();
+				$('#attributes').fadeIn();
+			}
+			);
+		})
+	});
+}
+
+function imageCycle(direction){
+	if (direction == 'right'){
+		inequality = '>',
+		ordering = ''
+	} else if (direction == 'left') {
+		inequality = '<',
+		ordering = 'desc'
+	}
+	query = `
+	WITH cte AS (
+		SELECT cartodb_id,
+		${config.column_names.img_location},
+		to_char(${config.column_names.date}, 'Mon YY (HH24:MI:SS)') clean_date,
+		TRUNC(100*((${config.column_names.ride_quality} - ${globals.max}) / (${globals.min} - ${globals.max}))) ride_quality_score,
+		to_char(${config.column_names.date}, 'HH24:MI:SS') string_date
+		FROM ${config.geometry_table}
+		WHERE trip_id = ${state.trackID}
+		)
+	SELECT *
+	FROM cte
+	WHERE string_date ${inequality} '${state.string_date}'
+	ORDER BY string_date ${ordering}
+	LIMIT 1`;
+	encoded_query = encodeURIComponent(query);
+	url = `https://${config.account}.carto.com/api/v2/sql?q=${encoded_query}`
+	$.getJSON(url, function(idxData) {
+		try {
+			imgUrl = idxData.rows[0][config.column_names.img_location],
+			clean_date = idxData.rows[0]['clean_date'],
+			ride_quality_score = idxData.rows[0]['ride_quality_score'],
+
+			imageTransition(imgUrl, clean_date, ride_quality_score)
+
+			globals.sublayers[0].trigger('featureClick', null, null, null,
+			{
+				cartodb_id : idxData.rows[0]['cartodb_id'],
+				trip_id : state.trackID,
+				string_date : idxData.rows[0]['string_date']
+
+			});;
+		}
+		catch(err) {
+			console.log('Psst, no images that way...');
+		}
+
+
+	});
+}
+
 
 // vizualization components
 function mapSetup() {
@@ -121,12 +188,13 @@ function mapSetup() {
 	// End highlight feature setup
 
 	var query = `
-		SELECT *,
-		to_char(${config.column_names.date}, 'Mon YY (HH24:MI:SS)') clean_date,
-		TRUNC(100*((${config.column_names.ride_quality} - ${globals.max}) / (${globals.min} - ${globals.max}))) ride_quality_score
-	 	FROM ${config.geometry_table}
-	 	ORDER BY ${config.column_names.ride_quality}
-	 	`
+	SELECT *,
+	to_char(${config.column_names.date}, 'HH24:MI:SS') string_date,
+	to_char(${config.column_names.date}, 'Mon YY (HH24:MI:SS)') clean_date,
+	TRUNC(100*((${config.column_names.ride_quality} - ${globals.max}) / (${globals.min} - ${globals.max}))) ride_quality_score
+	FROM ${config.geometry_table}
+	ORDER BY ${config.column_names.ride_quality}
+	`
 
 	var placeLayer = {
 		user_name: config.account,
@@ -135,12 +203,15 @@ function mapSetup() {
 			sql: query,
 			cartocss: cartography.cartocss,
 			interactivity: [
+			'trip_id',
+			'string_date',
 			config.column_names.date,
 			'clean_date',
 			'ride_quality_score',
 			config.column_names.ride_quality,
 			config.column_names.img_location,
-			'cartodb_id'
+			'cartodb_id',
+			'id'
 			]
 		}]
 	};
@@ -166,22 +237,17 @@ function mapSetup() {
     	globals.sublayers[0].on('featureClick', function(e, latlng, pos, data) {
     		$('#initalPrompt').fadeOut();
     		showFeature(data.cartodb_id)
-    		transition('#imageDate', data['clean_date'])
-    		transition('#rideQuality', data.ride_quality_score)
+    		state.featureID = data.cartodb_id
+    		state.trackID = data.trip_id,
+    		state.string_date = data['string_date'];
+    		
+    		imgUrl =  data[config.column_names.img_location],
+    		clean_date = data['clean_date'],
+    		ride_quality_score = data.ride_quality_score
+    		
     		// transition('#rideQuality', config.column_names.ride_quality)
     		
-    		$('#streetImg').fadeOut(function() {
-    			$('#loaderContainer').fadeIn();
-    			$('#streetImg')
-    			.attr('src', data[config.column_names.img_location])
-    			.load(function() {
-    				$('#loaderContainer').fadeOut(function() {
-    					$('#streetImg').fadeIn();
-    					$('#attributes').fadeIn();
-    				}
-    					);
-    			})
-    		});
+    		imageTransition(imgUrl, clean_date, ride_quality_score)
     		
     		// $('#streetImg').attr('src', 'https://storage4.openstreetcam.org/files/photo/2017/5/30/proc/402532_f3ccd_592dbf20cbdd7.jpg')
     		
