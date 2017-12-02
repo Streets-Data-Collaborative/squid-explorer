@@ -1,6 +1,8 @@
 ////// visualization state object and global data object
 state = {
 	"featureID" : "<UNIQUE_IDENTIFIER>",
+	"trackID" : "<UNIQUE_TRACK_IDENTIFIER>",
+	"string_date" : "<TIME>",
 	"minQuality" : "<MINIMUM_RIDE_QUALITY>",
 	"maxQuality" : "<MAX_RIDE_QUALITY>"
 }
@@ -23,6 +25,8 @@ function dataSetup(callback) {
 		randIdx =  Math.floor(Math.random() * (max - min)) + min,
 		randLocation = idxData.rows[randIdx]['cartodb_id'];
 		state.featureID = randLocation
+		state.trackID = idxData.rows[randIdx]['trip_id']
+		state.string_date = idxData.rows[randIdx]['string_date']
 
 
 		query = `
