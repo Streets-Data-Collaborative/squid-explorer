@@ -47,6 +47,30 @@ nav {
 	font-size: 20px;
 }
 
+#leftNext{
+	display: none;
+	left: 0;
+	font-size: 86px;
+	position: absolute;
+	color: rgba(255, 255, 255, .7);
+	/*color:  rgba(34, 34, 34, .7);*/
+	padding: 15px;
+	cursor: pointer;
+	padding-top: calc(50% + 30px + 44px);
+}
+
+#rightNext{
+	display: none;
+	right: 0;
+	font-size: 86px;
+	position: absolute;
+	color: rgba(255, 255, 255, .7);
+	/*color:  rgba(34, 34, 34, .7);*/
+	padding: 15px;
+	cursor: pointer;
+	padding-top: calc(50% + 30px + 44px);
+}
+
 #attributes {
 	display: none;
 	position: absolute;
