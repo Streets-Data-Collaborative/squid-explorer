@@ -30,6 +30,7 @@ config.geom_type = "point"
 //attribute related configuration
 config.attribute_table = "squid_smc_demo"
 // config.attribute_table = "squid_test"
+// config.column_names.date = 'timestamp'
 config.column_names.date = 'timestamp'
 config.column_names.ride_quality = 'v_value'
 // config.column_names.ride_quality = 'ride_quality'
