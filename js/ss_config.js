@@ -20,7 +20,7 @@ config.account = "california-data-collaborative"
 config.trackingID = "UA-46240051-10"
 
 //cartography related configuration
-config.geometry_table = "squid_smc_demo"//
+config.geometry_table = "squid_pats_commute_demo"//
 // config.geometry_table = 'squid_test'
 config.zoom = 13
 // config.coordinates = [40.72,-73.96]
@@ -28,7 +28,7 @@ config.coordinates = [34.06,-118.215]
 config.geom_type = "point"
 
 //attribute related configuration
-config.attribute_table = "squid_smc_demo"
+config.attribute_table = "squid_pats_commute_demo"
 // config.attribute_table = "squid_test"
 // config.column_names.date = 'timestamp'
 config.column_names.date = 'timestamp'
