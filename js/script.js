@@ -89,9 +89,10 @@ function transition(element, content){
 	});
 }
 
-function imageTransition(imgUrl, clean_date, ride_quality) {
+function imageTransition(imgUrl, clean_date, ride_quality_raw, ride_quality_score = 'test') {
 	transition('#imageDate', clean_date)
-	transition('#rideQuality', ride_quality)
+	transition('#rideQuality_raw', ride_quality_raw)
+	transition('#rideQuality_score', ride_quality_score)
 	$('#rightNext, #leftNext').fadeOut();
 	$('#streetImg').fadeOut(function() {
 		$('#loaderContainer').fadeIn();
@@ -108,6 +109,7 @@ function imageTransition(imgUrl, clean_date, ride_quality) {
 }
 
 function imageCycle(direction){
+
 	if (direction == 'right'){
 		inequality = '>',
 		ordering = ''
@@ -119,7 +121,9 @@ function imageCycle(direction){
 	WITH cte AS (
 		SELECT cartodb_id,
 		${config.column_names.img_location},
-		to_char(${config.column_names.date}, 'Mon YY (HH24:MI:SS)') clean_date,
+		${config.column_names.ride_quality},
+		ROUND(${config.column_names.ride_quality}::numeric, 2) ride_quality_round,
+		to_char(${config.column_names.date}, 'Mon DD, YYYY') clean_date,
 		TRUNC(100*((${config.column_names.ride_quality} - ${globals.max}) / (${globals.min} - ${globals.max}))) ride_quality_score,
 		to_char(${config.column_names.date}, 'HH24:MI:SS') string_date
 		FROM ${config.geometry_table}
@@ -134,19 +138,16 @@ function imageCycle(direction){
 	url = `https://${config.account}.carto.com/api/v2/sql?q=${encoded_query}`
 	$.getJSON(url, function(idxData) {
 		try {
-			imgUrl = idxData.rows[0][config.column_names.img_location],
-			clean_date = idxData.rows[0]['clean_date'],
-			ride_quality_score = idxData.rows[0]['ride_quality_score'],
-
-			imageTransition(imgUrl, clean_date, ride_quality_score)
-
+			// not fully parameterized
 			globals.sublayers[0].trigger('featureClick', null, null, null,
 			{
 				cartodb_id : idxData.rows[0]['cartodb_id'],
 				trip_id : state.trackID,
-				string_date : idxData.rows[0]['string_date']
-
-			});;
+				string_date : idxData.rows[0]['string_date'],
+				ride_quality_round : idxData.rows[0]['ride_quality_round'],
+				image_url : idxData.rows[0][config.column_names.img_location],
+				ride_quality_score : idxData.rows[0]['ride_quality_score']
+			});
 		}
 		catch(err) {
 			console.log('Psst, no images that way...');
@@ -188,9 +189,17 @@ function mapSetup() {
 	// End highlight feature setup
 
 	var query = `
-	SELECT *,
+	SELECT
+	cartodb_id,
+	trip_id,
+	${config.column_names.date},
+	${config.column_names.img_location},
+	the_geom,
+	the_geom_webmercator,
+	${config.column_names.ride_quality},
+	ROUND(${config.column_names.ride_quality}::numeric, 2) ride_quality_round,
 	to_char(${config.column_names.date}, 'HH24:MI:SS') string_date,
-	to_char(${config.column_names.date}, 'Mon YY (HH24:MI:SS)') clean_date,
+	to_char(${config.column_names.date}, 'Mon DD, YYYY') clean_date,
 	TRUNC(100*((${config.column_names.ride_quality} - ${globals.max}) / (${globals.min} - ${globals.max}))) ride_quality_score
 	FROM ${config.geometry_table}
 	ORDER BY ${config.column_names.ride_quality}
@@ -208,10 +217,9 @@ function mapSetup() {
 			config.column_names.date,
 			'clean_date',
 			'ride_quality_score',
-			config.column_names.ride_quality,
+			'ride_quality_round',
 			config.column_names.img_location,
-			'cartodb_id',
-			'id'
+			'cartodb_id'
 			]
 		}]
 	};
@@ -244,10 +252,11 @@ function mapSetup() {
     		imgUrl =  data[config.column_names.img_location],
     		clean_date = data['clean_date'],
     		ride_quality_score = data.ride_quality_score
+    		ride_quality_raw = data['ride_quality_round']
     		
     		// transition('#rideQuality', config.column_names.ride_quality)
     		
-    		imageTransition(imgUrl, clean_date, ride_quality_score)
+    		imageTransition(imgUrl, clean_date, `${ride_quality_raw} g`, ride_quality_score)
     		
     		// $('#streetImg').attr('src', 'https://storage4.openstreetcam.org/files/photo/2017/5/30/proc/402532_f3ccd_592dbf20cbdd7.jpg')
     		

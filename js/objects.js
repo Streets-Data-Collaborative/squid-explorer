@@ -86,7 +86,7 @@ var cartography = {
 choropleth = new cdb.geo.ui.Legend({
 	type: "choropleth",
 	show_title: true,
-	title: "Ride Quality Score",
+	title: "Quality Index",
 	data: [{
 		value: "0 -------- 20 -------- 40 ------- 60 ------- 80 ----- 100"
 	}, {

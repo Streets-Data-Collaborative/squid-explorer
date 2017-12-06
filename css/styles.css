@@ -11,7 +11,7 @@ nav {
 
 
 #loaderContainer{
-	padding-top: calc(50% + 30px + 44px);
+	padding-top: calc(50% + 30px);
 }
 
 #loader {
@@ -56,7 +56,7 @@ nav {
 	/*color:  rgba(34, 34, 34, .7);*/
 	padding: 15px;
 	cursor: pointer;
-	padding-top: calc(50% + 30px + 44px);
+	padding-top: calc(50% + 30px);
 }
 
 #rightNext{
@@ -68,7 +68,7 @@ nav {
 	/*color:  rgba(34, 34, 34, .7);*/
 	padding: 15px;
 	cursor: pointer;
-	padding-top: calc(50% + 30px + 44px);
+	padding-top: calc(50% + 30px);
 }
 
 #attributes {
