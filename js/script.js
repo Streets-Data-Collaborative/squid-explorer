@@ -89,7 +89,7 @@ function transition(element, content){
 	});
 }
 
-function imageTransition(imgUrl, clean_date, ride_quality_raw, ride_quality_score = 'test') {
+function imageTransition(imgUrl, clean_date, ride_quality_raw, ride_quality_score) {
 	transition('#imageDate', clean_date)
 	transition('#rideQuality_raw', ride_quality_raw)
 	transition('#rideQuality_score', ride_quality_score)
@@ -155,6 +155,101 @@ function imageCycle(direction){
 
 
 	});
+}
+
+function legendSetup(){
+	$(function () {
+		$('.legend-title')
+		.html(
+		` <div class="input-group">
+
+            <span class="input-group-addon fixed-width" id="qualityMeasure-addon">
+              Ride Quality Measure
+            </span>
+            <div>
+              <input type="text" class="form-control" id="qualityMeasure" aria-describedby="qualityMeasure-addon" disabled>
+            </div>
+            <div class="input-group-btn dropup">
+              <!-- <button tabindex="0" class="btn btn-default" id="qualityMeasure_wrapper" data-toggle="popover" data-title="Ride Quality Measure Note" aria-expanded="false"><i class="glyphicon glyphicon-info-sign"></i></button>-->
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-menu-hamburger"></i></button>
+              <ul class="dropdown-menu dropdown-menu-right">
+                <li><a id="raw" href="javascript: legendToggle('#qualityMeasure', '#raw');">Accelerometer Reading</a></li>
+                <li><a id="score" href="javascript: legendToggle('#qualityMeasure', '#score');">Relative Score (0-100)</a></li>
+              </ul>
+            </div>
+          </div>`
+		)
+	$(".min").css("text-transform" , "lowercase")
+	$(".max").css("text-transform" , "lowercase")
+	$('.cartodb-legend-stack').css({
+			"margin-left" : "15px",
+			"margin-right" : "-5px"
+		})
+
+	$('[data-toggle="popover"]').popover({
+			'trigger': 'focus',
+			'placement' : 'top',
+			'html' : 'true',
+			'tabindex': "0"
+		})
+		$('[data-toggle="dropdown"]').dropdown()
+
+	})
+}
+
+function legendToggle(displayForm_id, colName_id, setup=false) {
+
+	var disclaimers = {
+		"#score" : "<p>Customers without explicit household size data are assigned a default value based on the 2016 Census Block Group average household size.</p><p> In the absence of reliable dwelling unit data, the total household sizes of larger RESIDENTIAL_MULTI customers with many units will be underestimated using this approach.</p>",
+		"#raw" : "<p>The most recent release of Census Block-level demographic data was 2010.</p><p>Population in areas that have experienced substantial population change since 2010 (e.g. new development) will be incorrectly estimated with this approach.</p>"
+	}
+
+	var legendText = {
+		"#score" : ["0", "100"],
+		"#raw" : ["5 g", "0 g"]
+	}
+
+	var cartoCSS = {
+		"#score" : cartography.cartocss,
+		"#raw" : `
+
+		#table {
+
+		marker-fill-opacity: .75;
+		marker-line-width: 0;
+		marker-width: 10;
+		marker-allow-overlap: true;
+		polygon-comp-op: multiply;
+
+		}
+
+		#table [ v_value > 4] {marker-fill: #D9534F;}
+		#table [ v_value <= 4] { marker-fill: #D99F4F; }
+		#table [ v_value <= 3] { marker-fill: #D9C24F; }
+		#table [ v_value <= 2] { marker-fill: #B9D14C; }
+		#table [ v_value <= 1] { marker-fill: #3EAB45; }
+
+
+		`
+	}
+
+
+	$(displayForm_id+"_wrapper")
+		.attr('data-content', disclaimers[colName_id])
+		.popover('fixTitle')
+
+	dataName = $(colName_id).html()
+	$(displayForm_id).val(dataName)
+
+	// transition('.min', legendText[colName_id][0])
+	// transition('.max', legendText[colName_id][1])
+	$('.min').html(legendText[colName_id][0])
+	$('.max').html(legendText[colName_id][1])
+
+	if (setup == false){
+		globals.sublayers[0].setCartoCSS(cartoCSS[colName_id])
+	};
+	
 }
 
 
@@ -258,9 +353,6 @@ function mapSetup() {
     		
     		imageTransition(imgUrl, clean_date, `${ride_quality_raw} g`, ride_quality_score)
     		
-    		// $('#streetImg').attr('src', 'https://storage4.openstreetcam.org/files/photo/2017/5/30/proc/402532_f3ccd_592dbf20cbdd7.jpg')
-    		
-    		
     	});
     	globals.sublayers[0].on('featureOver', function(e, latlng, pos, data) {
     		$("#map").css('cursor', 'pointer')
@@ -282,5 +374,7 @@ function main(){
 
 	// vizualization setup
 	mapSetup();
+	legendSetup();
+	legendToggle('#qualityMeasure', '#score', setup=true);
 
 }

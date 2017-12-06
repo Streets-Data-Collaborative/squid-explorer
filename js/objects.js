@@ -134,11 +134,13 @@ if (config.geom_type == "point") {
 		marker-width: 10;
 		marker-allow-overlap: true;
 		polygon-comp-op: multiply;
+		}
 
 		#table [ ride_quality_score > 80] {marker-fill: #3EAB45;}
 		#table [ ride_quality_score <= 80] { marker-fill: #B9D14C; }
 		#table [ ride_quality_score <= 60] { marker-fill: #D9C24F; }
 		#table [ ride_quality_score <= 40] { marker-fill: #D99F4F; }
 		#table [ ride_quality_score <= 20] { marker-fill: #D9534F; }
-	}`
+
+	`
 }
