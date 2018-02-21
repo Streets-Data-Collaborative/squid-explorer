@@ -122,7 +122,7 @@ function imageCycle(direction){
 		SELECT cartodb_id,
 		${config.column_names.img_location},
 		${config.column_names.ride_quality},
-		ROUND(${config.column_names.ride_quality}::numeric, 2) ride_quality_round,
+		ROUND(${config.column_names.ride_quality}::numeric, 3) ride_quality_round,
 		to_char(${config.column_names.date}, 'Mon DD, YYYY') clean_date,
 		TRUNC(100*((${config.column_names.ride_quality} - ${globals.max}) / (${globals.min} - ${globals.max}))) ride_quality_score,
 		to_char(${config.column_names.date}, 'HH24:MI:SS') string_date
