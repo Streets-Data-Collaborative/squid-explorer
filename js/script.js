@@ -199,7 +199,7 @@ function mapSetup() {
 	}
 	// End highlight feature setup
 
-	var query = "\n\tSELECT\n\tcartodb_id,\n\ttrip_id,\n\t" + config.column_names.date + ",\n\t" + config.column_names.img_location + ",\n\tthe_geom,\n\tthe_geom_webmercator,\n\t" + config.column_names.ride_quality + ",\n\tROUND(" + config.column_names.ride_quality + "::numeric, 2) ride_quality_round,\n\tto_char(" + config.column_names.date + ", 'HH24:MI:SS') string_date,\n\tto_char(" + config.column_names.date + ", 'Mon DD, YYYY') clean_date,\n\tTRUNC(100*((" + config.column_names.ride_quality + " - " + globals.max + ") / (" + globals.min + " - " + globals.max + "))) ride_quality_score\n\tFROM " + config.geometry_table + "\n\tORDER BY " + config.column_names.ride_quality + "\n\t";
+	var query = "\n\tSELECT\n\tcartodb_id,\n\ttrip_id,\n\t" + config.column_names.date + ",\n\t" + config.column_names.img_location + ",\n\tthe_geom,\n\tthe_geom_webmercator,\n\t" + config.column_names.ride_quality + ",\n\tROUND(" + config.column_names.ride_quality + "::numeric, 3) ride_quality_round,\n\tto_char(" + config.column_names.date + ", 'HH24:MI:SS') string_date,\n\tto_char(" + config.column_names.date + ", 'Mon DD, YYYY') clean_date,\n\tTRUNC(100*((" + config.column_names.ride_quality + " - " + globals.max + ") / (" + globals.min + " - " + globals.max + "))) ride_quality_score\n\tFROM " + config.geometry_table + "\n\tORDER BY " + config.column_names.ride_quality + "\n\t";
 
 	var placeLayer = {
 		user_name: config.account,
