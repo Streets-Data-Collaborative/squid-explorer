@@ -136,11 +136,12 @@ if (config.geom_type == "point") {
 		polygon-comp-op: multiply;
 		}
 
-		#table [ ride_quality_score > 80] {marker-fill: #3EAB45;}
-		#table [ ride_quality_score <= 80] { marker-fill: #B9D14C; }
-		#table [ ride_quality_score <= 60] { marker-fill: #D9C24F; }
-		#table [ ride_quality_score <= 40] { marker-fill: #D99F4F; }
-		#table [ ride_quality_score <= 20] { marker-fill: #D9534F; }
+		#table [ ${config.column_names.ride_quality_colName_id} > 100] {marker-fill: gray;}
+		#table [ ${config.column_names.ride_quality_colName_id} <= 100] {marker-fill: #3EAB45;}
+		#table [ ${config.column_names.ride_quality_colName_id} <= 80] { marker-fill: #B9D14C; }
+		#table [ ${config.column_names.ride_quality_colName_id} <= 60] { marker-fill: #D9C24F; }
+		#table [ ${config.column_names.ride_quality_colName_id} <= 40] { marker-fill: #D99F4F; }
+		#table [ ${config.column_names.ride_quality_colName_id} <= 20] { marker-fill: #D9534F; }
 
 	`
 }

@@ -89,10 +89,11 @@ function transition(element, content){
 	});
 }
 
-function imageTransition(imgUrl, clean_date, ride_quality_raw, ride_quality_score) {
+function imageTransition(imgUrl, clean_date, ride_quality_raw, ride_quality_score, ride_quality_score_track) {
 	transition('#imageDate', clean_date)
 	transition('#rideQuality_raw', ride_quality_raw)
 	transition('#rideQuality_score', ride_quality_score)
+	transition('#rideQuality_score_track', ride_quality_score_track)
 	$('#rightNext, #leftNext').fadeOut();
 	$('#streetImg').fadeOut(function() {
 		$('#loaderContainer').fadeIn();
@@ -118,16 +119,30 @@ function imageCycle(direction){
 		ordering = 'desc'
 	}
 	query = `
-	WITH cte AS (
+	WITH CTE_mx_mn AS (
+		SELECT
+			MAX(v_value) local_max,
+			MIN(v_value) local_min,
+			MAX(v_value) - MIN(v_value) diff,
+			trip_id
+		FROM ${config.geometry_table}
+		GROUP BY trip_id
+		),
+	
+
+	cte AS (
 		SELECT cartodb_id,
 		${config.column_names.img_location},
 		${config.column_names.ride_quality},
 		ROUND(${config.column_names.ride_quality}::numeric, 3) ride_quality_round,
 		to_char(${config.column_names.date}, 'Mon DD, YYYY') clean_date,
 		TRUNC(100*((${config.column_names.ride_quality} - ${globals.max}) / (${globals.min} - ${globals.max}))) ride_quality_score,
+		TRUNC(100*((${config.column_names.ride_quality} - local_max) / (local_min - local_max))) ride_quality_score_track,
 		to_char(${config.column_names.date}, 'HH24:MI:SS') string_date
-		FROM ${config.geometry_table}
-		WHERE trip_id = ${state.trackID}
+		FROM ${config.geometry_table} all_data, CTE_mx_mn
+		WHERE all_data.trip_id = ${state.trackID}
+		AND all_data.trip_id = CTE_mx_mn.trip_id
+		AND diff != 0
 		)
 	SELECT *
 	FROM cte
@@ -146,7 +161,8 @@ function imageCycle(direction){
 				string_date : idxData.rows[0]['string_date'],
 				ride_quality_round : idxData.rows[0]['ride_quality_round'],
 				image_url : idxData.rows[0][config.column_names.img_location],
-				ride_quality_score : idxData.rows[0]['ride_quality_score']
+				ride_quality_score : idxData.rows[0]['ride_quality_score'],
+				ride_quality_score_track : idxData.rows[0]['ride_quality_score_track']
 			});
 		}
 		catch(err) {
@@ -174,7 +190,8 @@ function legendSetup(){
               <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-menu-hamburger"></i></button>
               <ul class="dropdown-menu dropdown-menu-right">
                 <li><a id="raw" href="javascript: legendToggle('#qualityMeasure', '#raw');">Accelerometer Reading</a></li>
-                <li><a id="score" href="javascript: legendToggle('#qualityMeasure', '#score');">Relative Score (0-100)</a></li>
+                <li><a id="score" href="javascript: legendToggle('#qualityMeasure', '#score');">Between Track Score (0-100)</a></li>
+                <li><a id="score_track" href="javascript: legendToggle('#qualityMeasure', '#score_track');">Within Track Score (0-100)</a></li>
               </ul>
             </div>
           </div>`
@@ -199,18 +216,61 @@ function legendSetup(){
 
 function legendToggle(displayForm_id, colName_id, setup=false) {
 
+	//not currently in use
 	var disclaimers = {
 		"#score" : "<p>Customers without explicit household size data are assigned a default value based on the 2016 Census Block Group average household size.</p><p> In the absence of reliable dwelling unit data, the total household sizes of larger RESIDENTIAL_MULTI customers with many units will be underestimated using this approach.</p>",
+		"#score_track" : "<p>Customers without explicit household size data are assigned a default value based on the 2016 Census Block Group average household size.</p><p> In the absence of reliable dwelling unit data, the total household sizes of larger RESIDENTIAL_MULTI customers with many units will be underestimated using this approach.</p>",
 		"#raw" : "<p>The most recent release of Census Block-level demographic data was 2010.</p><p>Population in areas that have experienced substantial population change since 2010 (e.g. new development) will be incorrectly estimated with this approach.</p>"
 	}
 
+	// var colNames = {
+	// 	"#score" : 'ride_quality_score',
+	// 	"#score_track" : 'ride_quality_score_track',
+	// 	"#raw" : "v_value"
+	// }
+	// config.column_names.ride_quality_colName_id = colNames[colName_id]
+
 	var legendText = {
 		"#score" : ["0", "100"],
+		"#score_track" : ["0", "100"],
 		"#raw" : ["5 g", "0 g"]
 	}
 
+
+
 	var cartoCSS = {
-		"#score" : cartography.cartocss,
+		"#score" : `
+		#table {
+		marker-fill-opacity: .75;
+		marker-line-width: 0;
+		marker-width: 10;
+		marker-allow-overlap: true;
+		polygon-comp-op: multiply;
+		}
+
+		#table [ ride_quality_score > 100] {marker-fill: gray;}
+		#table [ ride_quality_score <= 100] {marker-fill: #3EAB45;}
+		#table [ ride_quality_score <= 80] { marker-fill: #B9D14C; }
+		#table [ ride_quality_score <= 60] { marker-fill: #D9C24F; }
+		#table [ ride_quality_score <= 40] { marker-fill: #D99F4F; }
+		#table [ ride_quality_score <= 20] { marker-fill: #D9534F; }
+		`,
+		"#score_track" : `
+		#table {
+		marker-fill-opacity: .75;
+		marker-line-width: 0;
+		marker-width: 10;
+		marker-allow-overlap: true;
+		polygon-comp-op: multiply;
+		}
+
+		#table [ ride_quality_score_track > 100] {marker-fill: gray;}
+		#table [ ride_quality_score_track <= 100] {marker-fill: #3EAB45;}
+		#table [ ride_quality_score_track <= 80] { marker-fill: #B9D14C; }
+		#table [ ride_quality_score_track <= 60] { marker-fill: #D9C24F; }
+		#table [ ride_quality_score_track <= 40] { marker-fill: #D99F4F; }
+		#table [ ride_quality_score_track <= 20] { marker-fill: #D9534F; }
+		`,
 		"#raw" : `
 
 		#table {
@@ -284,9 +344,20 @@ function mapSetup() {
 	// End highlight feature setup
 
 	var query = `
+	with CTE_mx_mn AS (
+		SELECT
+			MAX(v_value) local_max,
+			MIN(v_value) local_min,
+			MAX(v_value) - MIN(v_value) diff,
+			trip_id
+		FROM ${config.geometry_table}
+		GROUP BY trip_id
+		)
+	
+
 	SELECT
 	cartodb_id,
-	trip_id,
+	all_data.trip_id,
 	${config.column_names.date},
 	${config.column_names.img_location},
 	the_geom,
@@ -295,8 +366,11 @@ function mapSetup() {
 	ROUND(${config.column_names.ride_quality}::numeric, 2) ride_quality_round,
 	to_char(${config.column_names.date}, 'HH24:MI:SS') string_date,
 	to_char(${config.column_names.date}, 'Mon DD, YYYY') clean_date,
-	TRUNC(100*((${config.column_names.ride_quality} - ${globals.max}) / (${globals.min} - ${globals.max}))) ride_quality_score
-	FROM ${config.geometry_table}
+	TRUNC(100*((${config.column_names.ride_quality} - ${globals.max}) / (${globals.min} - ${globals.max}))) ride_quality_score,
+	TRUNC(100*((${config.column_names.ride_quality} - local_max) / (local_min - local_max))) ride_quality_score_track
+	FROM ${config.geometry_table} all_data, CTE_mx_mn
+	WHERE all_data.trip_id = CTE_mx_mn.trip_id
+	AND diff != 0
 	ORDER BY ${config.column_names.ride_quality}
 	`
 
@@ -312,6 +386,7 @@ function mapSetup() {
 			config.column_names.date,
 			'clean_date',
 			'ride_quality_score',
+			'ride_quality_score_track',
 			'ride_quality_round',
 			config.column_names.img_location,
 			'cartodb_id'
@@ -347,11 +422,12 @@ function mapSetup() {
     		imgUrl =  data[config.column_names.img_location],
     		clean_date = data['clean_date'],
     		ride_quality_score = data.ride_quality_score
+    		ride_quality_score_track = data.ride_quality_score_track
     		ride_quality_raw = data['ride_quality_round']
     		
     		// transition('#rideQuality', config.column_names.ride_quality)
     		
-    		imageTransition(imgUrl, clean_date, `${ride_quality_raw} g`, ride_quality_score)
+    		imageTransition(imgUrl, clean_date, `${ride_quality_raw} g`, ride_quality_score, ride_quality_score_track)
     		
     	});
     	globals.sublayers[0].on('featureOver', function(e, latlng, pos, data) {
@@ -375,6 +451,6 @@ function main(){
 	// vizualization setup
 	mapSetup();
 	legendSetup();
-	legendToggle('#qualityMeasure', '#score', setup=true);
+	legendToggle('#qualityMeasure', '#score_track', setup=true);
 
 }
