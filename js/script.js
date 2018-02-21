@@ -186,7 +186,7 @@ function legendSetup(){
               <input type="text" class="form-control" id="qualityMeasure" aria-describedby="qualityMeasure-addon" disabled>
             </div>
             <div class="input-group-btn dropup">
-              <!-- <button tabindex="0" class="btn btn-default" id="qualityMeasure_wrapper" data-toggle="popover" data-title="Ride Quality Measure Note" aria-expanded="false"><i class="glyphicon glyphicon-info-sign"></i></button>-->
+              <button tabindex="0" class="btn btn-default" id="qualityMeasure_wrapper" data-toggle="popover" data-title="Notes" aria-expanded="false"><i class="glyphicon glyphicon-info-sign"></i></button>
               <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-menu-hamburger"></i></button>
               <ul class="dropdown-menu dropdown-menu-right">
                 <li><a id="raw" href="javascript: legendToggle('#qualityMeasure', '#raw');">Accelerometer Reading</a></li>
@@ -218,9 +218,47 @@ function legendToggle(displayForm_id, colName_id, setup=false) {
 
 	//not currently in use
 	var disclaimers = {
-		"#score" : "<p>Customers without explicit household size data are assigned a default value based on the 2016 Census Block Group average household size.</p><p> In the absence of reliable dwelling unit data, the total household sizes of larger RESIDENTIAL_MULTI customers with many units will be underestimated using this approach.</p>",
-		"#score_track" : "<p>Customers without explicit household size data are assigned a default value based on the 2016 Census Block Group average household size.</p><p> In the absence of reliable dwelling unit data, the total household sizes of larger RESIDENTIAL_MULTI customers with many units will be underestimated using this approach.</p>",
-		"#raw" : "<p>The most recent release of Census Block-level demographic data was 2010.</p><p>Population in areas that have experienced substantial population change since 2010 (e.g. new development) will be incorrectly estimated with this approach.</p>"
+		"#score" : `
+		<p><small>
+		
+		<b>Definition:</b> The <i>Between Track Score</i> ranks accelerometer readings across all tracks in the city.
+		
+		</small></p>
+		
+		<p><small>
+
+		<b>Disclaimer:</b> While this measure is track-agnostic, different vehicles may have non-trivially different suspensions. To account for this, check the <i>Within Track Score</i> as well. 
+
+		</small></p>
+		`,
+		
+		"#score_track" : `
+		<p><small>
+		
+		<b>Definition:</b> The <i>Within Track Score</i> ranks accelerometer readings across all measurements in the selected track.
+		
+		</small></p>
+
+		<p><small>
+
+		<b>Disclaimer:</b> While this measure normalizes across all measurements in the selected track, certain tracks may only traverse high quality streets. To account for this, check the other measures as well. 
+
+		</small></p>
+		`,
+		
+		"#raw" : `
+		<p><small>
+		
+		<b>Definition:</b> The <i>Accelerometer Reading</i> represents the raw accelerometer readings.
+		
+		</small></p>
+
+		<p><small>
+
+		<b>Disclaimer:</b> While this measure is track-agnostic, different vehicles may have non-trivially different suspensions. To account for this, check the <i>Within Track Score</i> as well. 
+
+		</small></p>
+		`
 	}
 
 	// var colNames = {
